@@ -35,6 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Handle "Change API Key" click
+    document.getElementById('change-key-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        // Hide main, show setup
+        mainSection.classList.add('hidden');
+        setupSection.classList.remove('hidden');
+        statusMsg.innerText = "";
+    });
+
     const analyzeBtn = document.getElementById('analyze-btn');
     const generationControls = document.getElementById('generation-controls');
 
@@ -62,7 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // If a dialog is open and looks like a product view (has an image or H1), use it.
         if (dialog && (dialog.querySelector('h1') || dialog.querySelector('img'))) {
             scope = dialog;
-            // console.log("Marketplace Negotiator: Scoping to Dialog/Modal");
+        }
+
+        // Reddit Specific Logic
+        const isReddit = window.location.hostname.includes('reddit.com');
+        if (isReddit) {
+            // Reddit usually puts main content in a specific container
+            // We'll stick to 'document' scope but prioritize certain selectors
+            const shredditPost = document.querySelector('shreddit-post');
+            if (shredditPost) scope = shredditPost;
         }
 
         // 1. Get Title
@@ -81,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Get Price
         // In the modal, price is usually close to H1.
         // We will look for <span> or <div> text that matches price regex within the scope.
-        const priceRegex = /^[\s₹$£€]*([\d,]+(\.\d{2})?)[\s]*$/;
+        // Updated regex to support K, M, B suffixes (e.g. ₹6M, $10k)
+        const priceRegex = /^[\s₹$£€]*([\d,]+(\.\d{1,2})?)\s*[kKmMbB]?[\s]*$/;
 
         // Get all text nodes in scope
         const allTextElems = Array.from(scope.querySelectorAll('span, div, h2, h3'));
@@ -211,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = await callGemini(apiKey, style, currentProduct);
             resultText.value = message;
             copyBtn.classList.remove('hidden');
+            pasteBtn.classList.remove('hidden');
             statusMsg.innerText = "Done!";
         } catch (error) {
             statusMsg.innerText = "Error: " + error.message;
@@ -223,6 +242,76 @@ document.addEventListener('DOMContentLoaded', () => {
         resultText.select();
         document.execCommand('copy');
         statusMsg.innerText = "Copied to clipboard!";
+    });
+
+    // Paste to Chat Logic
+    const pasteBtn = document.getElementById('paste-btn');
+
+    pasteBtn.addEventListener('click', async () => {
+        const message = resultText.value;
+        if (!message) return;
+
+        statusMsg.innerText = "Pasting into chat...";
+
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            try {
+                const result = await chrome.scripting.executeScript({
+                    target: { tabId: tabs[0].id },
+                    args: [message],
+                    func: (msg) => {
+                        // 1. Try to find the Facebook Marketplace Textarea (Dialog)
+                        // It usually has aria-label="Message" or is a textarea inside the dialog
+                        let input = document.querySelector('div[role="dialog"] textarea');
+
+                        // 2. Generic fallback for OLX/eBay/Others (First visible textarea)
+                        if (!input) {
+                            input = document.querySelector('textarea');
+                        }
+
+                        // 3. specific Reddit Comment Box (role="textbox")
+                        if (!input) {
+                            input = document.querySelector('div[role="textbox"]');
+                        }
+
+                        // 4. Fallback for contenteditable divs (generic)
+                        if (!input) {
+                            input = document.querySelector('div[contenteditable="true"]');
+                        }
+
+                        if (input) {
+                            // Focus and clear first
+                            input.focus();
+
+                            // Native input manipulation to trigger React/Framework events
+                            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+
+                            if (input.tagName === 'TEXTAREA' && nativeInputValueSetter) {
+                                nativeInputValueSetter.call(input, msg);
+                            } else {
+                                input.value = msg;
+                                if (input.isContentEditable) input.innerText = msg;
+                            }
+
+                            // Dispatch events to wake up the UI
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+                if (result && result[0] && result[0].result) {
+                    statusMsg.innerText = "Pasted! You can convert it now.";
+                } else {
+                    statusMsg.innerText = "Could not find chat box. Try clicking the box first.";
+                }
+
+            } catch (err) {
+                statusMsg.innerText = "Paste error: " + err.message;
+            }
+        });
     });
 
     // Helper to fetch image and convert to Base64
@@ -253,7 +342,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let userPrompt = `I want to buy "${product.title}" listed for ${product.price}. Description: "${product.description}". Write a negotiation message to the seller.`;
 
-        if (style === 'aggressive') {
+        const RAGE_BAIT_MODE = 'aggressive';
+
+        if (style === RAGE_BAIT_MODE) {
             userPrompt += " You are a unhinged, sarcastic, and ruthless negotiator. Channel the chaotic evil energy of Michael Reeves. Your goal is to rage-bait the seller with an insultingly low offer (30% of asking). Mock their photography and item condition creatively. Make personal attacks disguised as jokes (e.g., imply their parents are disappointed in them for owning this item). Gaslight them. Be funny, mean, and strictly between 50-150 words.";
         } else if (style === 'confused') {
             userPrompt += " You are a confused buyer who barely knows how to use the internet. Ask questions that don't make sense.";
