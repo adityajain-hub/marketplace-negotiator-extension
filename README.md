@@ -5,7 +5,7 @@
 
 A "self-healing" Chrome Extension that serves as your AI Copilot for negotiating on Facebook Marketplace.
 
-Powered by **Google Gemini Flash**, it uses Computer Vision to analyze product condition and generates negotiation messages ranging from "Polite" to **"Unhinged/Rage-Bait"** (inspired by Michael Reeves).
+Powered by **Google Gemini-2.5-Flash**, it uses Computer Vision to analyze product condition and generates negotiation messages ranging from "Polite" to **"Unhinged/Rage-Bait"** (inspired by Michael Reeves).
 
 ## 🚀 Features
 
