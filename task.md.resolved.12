@@ -1,0 +1,22 @@
+- [x] Plan and Design Extension
+  - [x] Create implementation plan
+  - [x] Define manifest structure
+- [x] Implement Core Extension
+  - [x] Create manifest.json
+  - [x] Create content script (scraper)
+  - [x] Create popup UI (settings & results)
+  - [x] Create background script (LLM handler)
+- [x] Verify and Refine
+  - [x] Fix price scraping (RegEx/Heuristics)
+  - [x] Add Image Analysis (GPT-4 Vision)
+  - [x] Test on mock negotiation page
+  - [/] Refactor for Gemini & Vision
+    - [x] Switch to Google Gemini API
+    - [x] Implement Multi-image scraping
+    - [x] Update Popup UI
+- [x] Refactor for Gemini & Vision
+  - [x] Switch to Google Gemini API
+  - [x] Implement Multi-image scraping
+  - [x] Update Popup UI
+  - [/] Verify functionality (Debugging API Model)
+  - [x] Refine prompt engineering options

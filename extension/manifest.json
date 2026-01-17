@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Marketplace Negotiator Bot",
+    "version": "1.0",
+    "description": "Scrapes marketplace items and generates negotiation messages.",
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "storage"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    }
+}

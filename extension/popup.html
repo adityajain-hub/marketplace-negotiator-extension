@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negotiator Bot</title>
+  <style>
+    body {
+      width: 350px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 15px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 18px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    button:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .result-area {
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 5px;
+    }
+
+    .scraped-info {
+      background: #e8f4f8;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Marketplace Negotiator</h2>
+
+    <div id="setup-section">
+      <label for="api-key">Google Gemini API Key</label>
+      <input type="password" id="api-key" placeholder="AI Studio Key...">
+      <button id="save-key">Save Key</button>
+    </div>
+
+    <div id="main-section" class="hidden">
+      <!-- Explicit Analyze Button for Stealth -->
+      <button id="analyze-btn" style="background-color: #27ae60; margin-bottom: 10px;">Analyze This Page</button>
+
+      <div id="scraped-data" class="scraped-info hidden">
+        <strong>Detected Item:</strong> <span id="item-name">...</span><br>
+        <strong>Price:</strong> <span id="item-price">...</span>
+      </div>
+
+      <div id="generation-controls" class="hidden">
+        <label for="negotiation-style">Style</label>
+        <select id="negotiation-style">
+          <option value="polite">Polite but Firm</option>
+          <option value="aggressive">Aggressive Lowball (Reeves Style)</option>
+          <option value="confused">Confused Buyer</option>
+        </select>
+
+        <label for="response-language">Language</label>
+        <select id="response-language">
+          <option value="Auto">Same as Listing (Auto)</option>
+          <option value="English">English</option>
+          <option value="Hindi">Hindi</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="German">German</option>
+        </select>
+
+
+        <button id="generate-btn">Generate Negotiation</button>
+      </div> <!-- End generation-controls -->
+
+      <div class="result-area">
+        <label for="result-text">Response:</label>
+        <textarea id="result-text" placeholder="Generated message will appear here..."></textarea>
+        <button id="copy-btn" class="hidden">Copy to Clipboard</button>
+      </div>
+
+      <div id="status-msg" class="status"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

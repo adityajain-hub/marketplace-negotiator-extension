@@ -1,0 +1,26 @@
+# Video Analysis: A Bot that Scams People
+**Source**: [Michael Reeves - A Bot that Scams People](https://youtu.be/LwOITqr_fz4?si=xOjdodnP-oGQpsKu)
+
+## Core Concept
+Michael Reeves built an automated bot designed to "scam" (aggressively lowball and negotiate with) sellers on Facebook Marketplace. The goal was to test if an AI could outperform humans in negotiating better prices through sheer persistence and lack of shame.
+
+## Technical Architecture
+Based on the video's description, the system involves:
+1.  **Scraper**: A bot that browses Facebook Marketplace and scrapes product details (price, description, location, condition).
+2.  **LLM Integration (ChatGPT)**: The scraped data is fed into ChatGPT with a prompt designed to generate "mean," aggressive, and manipulative negotiation messages.
+3.  **Automation**: The bot sends these messages automatically to sellers.
+4.  **Bypassing Protections**:
+    *   **Proxies/VPN**: Used NordVPN and residential/dedicated IPs to avoid IP bans.
+    *   **Account Farming**: Purchased multiple (50+) Facebook accounts (specifically mentioning Pakistani accounts) to mitigate bans.
+
+## Key Outcomes & Learnings
+*   **Effectiveness**: The bot was successful in securing discounts (e.g., a monitor for $20 instead of $50, a moped for 15% off). It outperformed a control group of human negotiators.
+*   **Challenges**: 
+    *   **Platform Detection**: Facebook aggressively bans bots. The project required significant effort in managing accounts and IPs to stay online.
+    *   **Ethical/Moral**: While the bot succeeded in getting lower prices, the "gaslighting" nature of the AI's negotiation tactics felt unethical to the creator.
+*   **Resolution**: Michael paid the original asking price to the sellers in the end, using the bot only for the experiment's sake.
+
+## Takeaway for Development
+If we were to replicate a similar system (for ethical purposes, presumably), the key technical hurdles are:
+1.  **Anti-Scraping Measures**: Platforms like Facebook have robust detection. Success requires high-quality proxies and browser fingerprint management.
+2.  **Context Management**: The LLM needs strict prompts to stay within the bounds of a coherent negotiation without hallucinating or becoming too "unhinged" (unless that is the goal).
